@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token_2022 as token;
 use anchor_spl::token_interface::{Mint, TokenAccount, Token2022, MintTo, TokenAccount as TokenAccountInterface};
 
-declare_id!("REPLACE_WITH_DEPLOYED_PROGRAM_ID");
+declare_id!("BPDM9Ls3NU3JohLeTxxULbZzK4yUmqt5H2mRUCTms3R7");
 
 #[program]
 pub mod lumi {

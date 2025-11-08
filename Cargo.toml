@@ -3,3 +3,6 @@ resolver = "2"
 members = [
   "programs/lumi"
 ]
+
+[profile.release]
+overflow-checks = true
