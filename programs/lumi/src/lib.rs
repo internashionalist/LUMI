@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_2022 as token;
-use anchor_spl::token_interface::{Mint, TokenAccount, Token2022, MintTo, TokenAccount as TokenAccountInterface};
+use anchor_spl::token as spl_token;               // legacy SPL-Token
+use anchor_spl::token_2022 as spl_token_2022;     // Token-2022
+use anchor_spl::token_interface as ti;            // interface types shared by both
 
 declare_id!("BPDM9Ls3NU3JohLeTxxULbZzK4yUmqt5H2mRUCTms3R7");
 
@@ -12,7 +13,7 @@ pub mod lumi {
         let config = &mut ctx.accounts.config;
         config.admin = ctx.accounts.admin.key();
         config.lumi_mint = ctx.accounts.lumi_mint.key();
-        config.mint_authority_bump = *ctx.bumps.get("mint_authority").unwrap();
+        config.mint_authority_bump = ctx.bumps.mint_authority;
         config.daily_cap_per_issuer = daily_cap_per_issuer;
         Ok(())
     }
@@ -40,14 +41,15 @@ pub mod lumi {
         require!(issuer.issued_today.saturating_add(amount) <= config.daily_cap_per_issuer, LumiError::DailyCapExceeded);
 
         // Mint LUMI using PDA as mint authority
+		let cfg_key = config.key();
         let seeds: &[&[u8]] = &[
             b"mint_authority",
-            config.key().as_ref(),
+            cfg_key.as_ref(),
             &[config.mint_authority_bump],
         ];
-        let signer = &[seeds];
+         let signer: &[&[&[u8]]] = &[seeds];
 
-        let cpi_accounts = MintTo {
+        let cpi_accounts = spl_token_2022::MintTo {
             mint: ctx.accounts.lumi_mint.to_account_info(),
             to: ctx.accounts.to_ata.to_account_info(),
             authority: ctx.accounts.mint_authority.to_account_info(),
@@ -57,7 +59,54 @@ pub mod lumi {
             cpi_accounts,
             signer,
         );
-        token::mint_to(cpi_ctx, amount)?;
+        spl_token_2022::mint_to(cpi_ctx, amount)?;
+
+        issuer.issued_today = issuer.issued_today.saturating_add(amount);
+
+        emit!(LumiIssued {
+            issuer: issuer.wallet,
+            to: ctx.accounts.to.key(),
+            amount,
+            reason_code,
+            ipfs_cid,
+        });
+        Ok(())
+    }
+
+    pub fn issue_lumi_legacy(ctx: Context<IssueLumiLegacy>, amount: u64, reason_code: [u8;8], ipfs_cid: String) -> Result<()> {
+        let clock = Clock::get()?;
+        let day = (clock.unix_timestamp as u64) / 86_400;
+        let config = &ctx.accounts.config;
+        let issuer = &mut ctx.accounts.issuer;
+
+        require!(issuer.active, LumiError::IssuerInactive);
+        if issuer.last_issue_day != day {
+            issuer.last_issue_day = day;
+            issuer.issued_today = 0;
+        }
+        require!(issuer.issued_today.saturating_add(amount) <= config.daily_cap_per_issuer, LumiError::DailyCapExceeded);
+
+        // PDA signer seeds
+		let cfg_key = config.key();
+        let seeds: &[&[u8]] = &[
+            b"mint_authority",
+            cfg_key.as_ref(),
+            &[config.mint_authority_bump],
+        ];
+         let signer: &[&[&[u8]]] = &[seeds];
+
+        // CPI into legacy SPL-Token program
+        let cpi_accounts = spl_token::MintTo {
+            mint: ctx.accounts.lumi_mint.to_account_info(),
+            to: ctx.accounts.to_ata.to_account_info(),
+            authority: ctx.accounts.mint_authority.to_account_info(),
+        };
+        let cpi_ctx = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            cpi_accounts,
+            signer,
+        );
+        spl_token::mint_to(cpi_ctx, amount)?;
 
         issuer.issued_today = issuer.issued_today.saturating_add(amount);
 
@@ -85,7 +134,7 @@ pub struct InitializeConfig<'info> {
     pub mint_authority: UncheckedAccount<'info>,
 
     #[account(mut)]
-    pub lumi_mint: InterfaceAccount<'info, Mint>,
+    pub lumi_mint: InterfaceAccount<'info, ti::Mint>,
 
     #[account(
         init,
@@ -95,7 +144,7 @@ pub struct InitializeConfig<'info> {
     pub config: Account<'info, Config>,
 
     pub system_program: Program<'info, System>,
-    pub token_program: Program<'info, Token2022>,
+    pub token_program: Program<'info, spl_token_2022::Token2022>,
 }
 
 #[derive(Accounts)]
@@ -124,9 +173,9 @@ pub struct AddIssuer<'info> {
 
 #[derive(Accounts)]
 pub struct IssueLumi<'info> {
-    /// issuer must sign
+    /// issuer must sign and must match `issuer.wallet`
     #[account(mut)]
-    pub issuer_wallet: Signer<'info>,
+    pub wallet: Signer<'info>,
 
     #[account(mut)]
     pub config: Account<'info, Config>,
@@ -140,7 +189,7 @@ pub struct IssueLumi<'info> {
 
     #[account(
         mut,
-        seeds = [b"issuer", config.key().as_ref(), issuer_wallet.key().as_ref()],
+        seeds = [b"issuer", config.key().as_ref(), wallet.key().as_ref()],
         bump,
         has_one = wallet @ LumiError::Unauthorized
     )]
@@ -151,12 +200,49 @@ pub struct IssueLumi<'info> {
     pub to: UncheckedAccount<'info>,
 
     #[account(mut)]
-    pub lumi_mint: InterfaceAccount<'info, Mint>,
+    pub lumi_mint: InterfaceAccount<'info, ti::Mint>,
 
     #[account(mut)]
-    pub to_ata: InterfaceAccount<'info, TokenAccountInterface>,
+    pub to_ata: InterfaceAccount<'info, ti::TokenAccount>,
 
-    pub token_program: Program<'info, Token2022>,
+    pub token_program: Program<'info, spl_token_2022::Token2022>,
+}
+
+#[derive(Accounts)]
+pub struct IssueLumiLegacy<'info> {
+    /// issuer must sign and must match `issuer.wallet`
+    #[account(mut)]
+    pub wallet: Signer<'info>,
+
+    #[account(mut)]
+    pub config: Account<'info, Config>,
+
+    /// CHECK: PDA that signs mint_to
+    #[account(
+        seeds = [b"mint_authority", config.key().as_ref()],
+        bump = config.mint_authority_bump,
+    )]
+    pub mint_authority: UncheckedAccount<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"issuer", config.key().as_ref(), wallet.key().as_ref()],
+        bump,
+        has_one = wallet @ LumiError::Unauthorized
+    )]
+    pub issuer: Account<'info, Issuer>,
+
+    /// Recipient
+    /// CHECK: just a pubkey receiver; ATA must exist or be created client-side
+    pub to: UncheckedAccount<'info>,
+
+    #[account(mut)]
+    pub lumi_mint: InterfaceAccount<'info, ti::Mint>,
+
+    #[account(mut)]
+    pub to_ata: InterfaceAccount<'info, ti::TokenAccount>,
+
+    pub token_program: Program<'info, spl_token::Token>,
 }
 
 #[account]

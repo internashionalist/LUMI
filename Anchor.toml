@@ -11,7 +11,8 @@ url = "https://anchor.projectserum.com"
 cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
+[toolchain]
+anchor_version = "0.32.1"
+
 [scripts]
 setup = "ts-node -O '{\"module\":\"commonjs\"}' ./tests/setup.ts"
-
-
