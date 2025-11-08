@@ -1,0 +1,15 @@
+[programs.localnet]
+lumi = "LUMI111111111111111111111111111111111111111"
+
+[programs.devnet]
+lumi = "REPLACE_WITH_DEPLOYED_PROGRAM_ID"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "Devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+setup = "ts-node -O '{\"module\":\"commonjs\"}' ./tests/setup.ts"

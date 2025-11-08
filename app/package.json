@@ -1,0 +1,23 @@
+{
+	"name": "lumi-web",
+	"private": true,
+	"scripts": {
+		"dev": "next dev -p 3000",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"@coral-xyz/anchor": "^0.29.0",
+		"@solana/spl-token": "^0.4.0",
+		"@solana/web3.js": "^1.95.0",
+		"@solana/wallet-adapter-react": "^0.15.35",
+		"@solana/wallet-adapter-wallets": "^0.19.21",
+		"@solana/wallet-adapter-react-ui": "^0.9.34",
+		"next": "14.2.5",
+		"react": "18.2.0",
+		"react-dom": "18.2.0"
+	},
+	"devDependencies": {
+		"typescript": "^5.6.3"
+	}
+}

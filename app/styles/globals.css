@@ -1,0 +1,13 @@
+body {
+	font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+input,
+button {
+	padding: 8px;
+	font-size: 16px;
+}
+
+button {
+	cursor: pointer;
+}
