@@ -1,0 +1,552 @@
+{
+  "accounts": [
+    {
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ],
+      "name": "Config"
+    },
+    {
+      "discriminator": [
+        216,
+        19,
+        83,
+        230,
+        108,
+        53,
+        80,
+        14
+      ],
+      "name": "Issuer"
+    }
+  ],
+  "address": "DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM",
+  "errors": [
+    {
+      "code": 6000,
+      "msg": "Issuer is inactive",
+      "name": "IssuerInactive"
+    },
+    {
+      "code": 6001,
+      "msg": "Daily cap exceeded",
+      "name": "DailyCapExceeded"
+    },
+    {
+      "code": 6002,
+      "msg": "Unauthorized",
+      "name": "Unauthorized"
+    }
+  ],
+  "events": [
+    {
+      "discriminator": [
+        174,
+        224,
+        63,
+        133,
+        82,
+        6,
+        235,
+        47
+      ],
+      "name": "LumiIssued"
+    }
+  ],
+  "instructions": [
+    {
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "writable": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "docs": [
+            "PDA: issuer record bound to wallet"
+          ],
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              },
+              {
+                "kind": "account",
+                "path": "issuer_wallet"
+              }
+            ]
+          },
+          "writable": true
+        },
+        {
+          "name": "issuer_wallet"
+        },
+        {
+          "address": "11111111111111111111111111111111",
+          "name": "system_program"
+        }
+      ],
+      "args": [],
+      "discriminator": [
+        252,
+        97,
+        3,
+        221,
+        65,
+        162,
+        177,
+        32
+      ],
+      "name": "add_issuer"
+    },
+    {
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "writable": true
+        },
+        {
+          "name": "mint_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lumi_mint",
+          "writable": true
+        },
+        {
+          "name": "config",
+          "signer": true,
+          "writable": true
+        },
+        {
+          "address": "11111111111111111111111111111111",
+          "name": "system_program"
+        },
+        {
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "daily_cap_per_issuer",
+          "type": "u64"
+        }
+      ],
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "name": "initialize_config"
+    },
+    {
+      "accounts": [
+        {
+          "docs": [
+            "issuer must sign and must match `issuer.wallet`"
+          ],
+          "name": "wallet",
+          "relations": [
+            "issuer"
+          ],
+          "signer": true,
+          "writable": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "mint_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          },
+          "writable": true
+        },
+        {
+          "docs": [
+            "Recipient"
+          ],
+          "name": "to"
+        },
+        {
+          "name": "lumi_mint",
+          "writable": true
+        },
+        {
+          "name": "to_ata",
+          "writable": true
+        },
+        {
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "reason_code",
+          "type": {
+            "array": [
+              "u8",
+              8
+            ]
+          }
+        },
+        {
+          "name": "ipfs_cid",
+          "type": "string"
+        }
+      ],
+      "discriminator": [
+        142,
+        115,
+        50,
+        108,
+        109,
+        208,
+        193,
+        90
+      ],
+      "name": "issue_lumi"
+    },
+    {
+      "accounts": [
+        {
+          "docs": [
+            "issuer must sign and must match `issuer.wallet`"
+          ],
+          "name": "wallet",
+          "relations": [
+            "issuer"
+          ],
+          "signer": true,
+          "writable": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "mint_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          },
+          "writable": true
+        },
+        {
+          "docs": [
+            "Recipient"
+          ],
+          "name": "to"
+        },
+        {
+          "name": "lumi_mint",
+          "writable": true
+        },
+        {
+          "name": "to_ata",
+          "writable": true
+        },
+        {
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "reason_code",
+          "type": {
+            "array": [
+              "u8",
+              8
+            ]
+          }
+        },
+        {
+          "name": "ipfs_cid",
+          "type": "string"
+        }
+      ],
+      "discriminator": [
+        32,
+        165,
+        243,
+        10,
+        103,
+        128,
+        178,
+        186
+      ],
+      "name": "issue_lumi_legacy"
+    }
+  ],
+  "metadata": {
+    "name": "lumi",
+    "spec": "0.1.0",
+    "version": "0.1.0"
+  },
+  "types": [
+    {
+      "name": "Config",
+      "type": {
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "lumi_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_authority_bump",
+            "type": "u8"
+          },
+          {
+            "name": "daily_cap_per_issuer",
+            "type": "u64"
+          },
+          {
+            "name": "issued_today",
+            "type": "u64"
+          },
+          {
+            "name": "last_issue_day",
+            "type": "i64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "Issuer",
+      "type": {
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "issued_today",
+            "type": "u64"
+          },
+          {
+            "name": "last_issue_day",
+            "type": "i64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "LumiIssued",
+      "type": {
+        "fields": [
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "to",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "reason_code",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "ipfs_cid",
+            "type": "string"
+          }
+        ],
+        "kind": "struct"
+      }
+    }
+  ]
+}

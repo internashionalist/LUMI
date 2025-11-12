@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token as spl_token;               // legacy SPL-Token
-use anchor_spl::token_2022 as spl_token_2022;     // Token-2022
 use anchor_spl::token_interface as ti;            // interface types shared by both
 
-declare_id!("BPDM9Ls3NU3JohLeTxxULbZzK4yUmqt5H2mRUCTms3R7");
+declare_id!("DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM");
 
 #[program]
 pub mod lumi {
@@ -29,7 +27,7 @@ pub mod lumi {
 
     pub fn issue_lumi(ctx: Context<IssueLumi>, amount: u64, reason_code: [u8;8], ipfs_cid: String) -> Result<()> {
         let clock = Clock::get()?;
-        let day = (clock.unix_timestamp as u64) / 86_400;
+        let day: i64 = clock.unix_timestamp / 86_400;
         let config = &ctx.accounts.config;
         let issuer = &mut ctx.accounts.issuer;
 
@@ -49,7 +47,7 @@ pub mod lumi {
         ];
          let signer: &[&[&[u8]]] = &[seeds];
 
-        let cpi_accounts = spl_token_2022::MintTo {
+        let cpi_accounts = ti::MintTo {
             mint: ctx.accounts.lumi_mint.to_account_info(),
             to: ctx.accounts.to_ata.to_account_info(),
             authority: ctx.accounts.mint_authority.to_account_info(),
@@ -59,7 +57,7 @@ pub mod lumi {
             cpi_accounts,
             signer,
         );
-        spl_token_2022::mint_to(cpi_ctx, amount)?;
+        ti::mint_to(cpi_ctx, amount)?;
 
         issuer.issued_today = issuer.issued_today.saturating_add(amount);
 
@@ -75,7 +73,7 @@ pub mod lumi {
 
     pub fn issue_lumi_legacy(ctx: Context<IssueLumiLegacy>, amount: u64, reason_code: [u8;8], ipfs_cid: String) -> Result<()> {
         let clock = Clock::get()?;
-        let day = (clock.unix_timestamp as u64) / 86_400;
+        let day: i64 = clock.unix_timestamp / 86_400;
         let config = &ctx.accounts.config;
         let issuer = &mut ctx.accounts.issuer;
 
@@ -95,8 +93,8 @@ pub mod lumi {
         ];
          let signer: &[&[&[u8]]] = &[seeds];
 
-        // CPI into legacy SPL-Token program
-        let cpi_accounts = spl_token::MintTo {
+        // CPI via token-interface (works for SPL and Token-2022)
+        let cpi_accounts = ti::MintTo {
             mint: ctx.accounts.lumi_mint.to_account_info(),
             to: ctx.accounts.to_ata.to_account_info(),
             authority: ctx.accounts.mint_authority.to_account_info(),
@@ -106,7 +104,7 @@ pub mod lumi {
             cpi_accounts,
             signer,
         );
-        spl_token::mint_to(cpi_ctx, amount)?;
+        ti::mint_to(cpi_ctx, amount)?;
 
         issuer.issued_today = issuer.issued_today.saturating_add(amount);
 
@@ -144,7 +142,7 @@ pub struct InitializeConfig<'info> {
     pub config: Account<'info, Config>,
 
     pub system_program: Program<'info, System>,
-    pub token_program: Program<'info, spl_token_2022::Token2022>,
+    pub token_program: Interface<'info, ti::TokenInterface>,
 }
 
 #[derive(Accounts)]
@@ -205,7 +203,7 @@ pub struct IssueLumi<'info> {
     #[account(mut)]
     pub to_ata: InterfaceAccount<'info, ti::TokenAccount>,
 
-    pub token_program: Program<'info, spl_token_2022::Token2022>,
+    pub token_program: Interface<'info, ti::TokenInterface>,
 }
 
 #[derive(Accounts)]
@@ -242,23 +240,27 @@ pub struct IssueLumiLegacy<'info> {
     #[account(mut)]
     pub to_ata: InterfaceAccount<'info, ti::TokenAccount>,
 
-    pub token_program: Program<'info, spl_token::Token>,
+    pub token_program: Interface<'info, ti::TokenInterface>,
 }
 
 #[account]
 pub struct Config {
-    pub admin: Pubkey,
-    pub lumi_mint: Pubkey,
-    pub mint_authority_bump: u8,
-    pub daily_cap_per_issuer: u64,
+    pub admin: Pubkey,              // authority that can configure the program
+    pub wallet: Pubkey,             // program treasury or payout wallet (if used)
+    pub lumi_mint: Pubkey,          // LUMI mint address (Token-2022 or legacy)
+    pub mint_authority_bump: u8,    // PDA bump for mint_authority
+    pub daily_cap_per_issuer: u64,  // max LUMI an issuer can mint per day
+    pub issued_today: u64,          // running total minted today by *this* issuer (global if single-issuer)
+    pub last_issue_day: i64,        // day number (UTC) when issued_today was last reset
+    pub active: bool,               // global switch (if you use it)
 }
-impl Config { pub const SIZE: usize = 32 + 32 + 1 + 8; }
+impl Config {  pub const SIZE: usize = 32 + 32 + 32 + 1 + 8 + 8 + 8 + 1; }
 
 #[account]
 pub struct Issuer {
     pub wallet: Pubkey,
     pub issued_today: u64,
-    pub last_issue_day: u64,
+    pub last_issue_day: i64,
     pub active: bool,
 }
 impl Issuer { pub const SIZE: usize = 32 + 8 + 8 + 1; }

@@ -1,0 +1,4 @@
+target/deploy/
+node_modules/
+.next/
+target/

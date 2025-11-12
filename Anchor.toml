@@ -1,18 +1,22 @@
-[programs.localnet]
-lumi = "BPDM9Ls3NU3JohLeTxxULbZzK4yUmqt5H2mRUCTms3R7"
+[toolchain]
+anchor_version = "0.32.1"
+
+[features]
+resolution = true
+skip-lint = false
 
 [programs.devnet]
-lumi = "BPDM9Ls3NU3JohLeTxxULbZzK4yUmqt5H2mRUCTms3R7"
+lumi = "DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM"
+
+[programs.localnet]
+lumi = "DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "Devnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
-
-[toolchain]
-anchor_version = "0.32.1"
 
 [scripts]
 setup = "ts-node -O '{\"module\":\"commonjs\"}' ./tests/setup.ts"
