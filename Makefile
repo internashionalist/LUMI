@@ -1,10 +1,10 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-# Default env file
+# default env file
 ENV ?= .env.devnet
 
-# Helper to load env for each target
+# helper to load env for each target
 define LOAD_ENV
 set -a; source $(ENV); set +a;
 endef
@@ -23,7 +23,7 @@ add-issuer:
 	$(LOAD_ENV)
 	npx ts-node scripts/lumi.ts --add-issuer
 
-# Usage: make issue TO=<recipient_pubkey> AMOUNT=<amount> [ARGS="--reason 000... --cid 'note' [--base-units]"]
+# usage: make issue TO=<recipient_pubkey> AMOUNT=<amount> [ARGS="--reason 000... --cid 'note' [--base-units]"]
 issue:
 	@if [ -z "$(TO)" ] || [ -z "$(AMOUNT)" ]; then \
 	  echo "Usage: make issue TO=<recipient_pubkey> AMOUNT=<amount> [ARGS='--reason 000... --cid note [--base-units]']"; \
@@ -32,7 +32,7 @@ issue:
 	$(LOAD_ENV)
 	npx ts-node scripts/lumi.ts --issue $(TO) $(AMOUNT) $(ARGS)
 
-# Usage: make balance OWNER=<owner_pubkey>
+# usage: make balance OWNER=<owner_pubkey>
 balance:
 	@if [ -z "$(OWNER)" ]; then \
 	  echo "Usage: make balance OWNER=<owner_pubkey>"; \
@@ -41,7 +41,7 @@ balance:
 	$(LOAD_ENV)
 	npx ts-node scripts/lumi.ts --balance $(OWNER)
 
-# Usage: make create-ata OWNER=<owner_pubkey>
+# usage: make create-ata OWNER=<owner_pubkey>
 create-ata:
 	@if [ -z "$(OWNER)" ]; then \
 	  echo "Usage: make create-ata OWNER=<owner_pubkey>"; \
@@ -50,7 +50,7 @@ create-ata:
 	$(LOAD_ENV)
 	spl-token create-account $$LUMI_MINT --owner $(OWNER) --fee-payer $$ANCHOR_WALLET
 
-# Usage: make transfer TO=<recipient_pubkey> AMOUNT=<amount>
+# usage: make transfer TO=<recipient_pubkey> AMOUNT=<amount>
 transfer:
 	@if [ -z "$(TO)" ] || [ -z "$(AMOUNT)" ]; then \
 	  echo "Usage: make transfer TO=<recipient_pubkey> AMOUNT=<amount>"; \

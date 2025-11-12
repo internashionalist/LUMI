@@ -494,7 +494,7 @@ async function main() {
     console.log("to ATA:", toAta.toBase58(), "amount (u64):", amountU64.toString());
   }
 
-  // ---- Helpers: balance lookup for a given owner ----
+  // helpers: balance lookup for a given owner
   async function balanceForOwner(
     connection: Connection,
     owner: PublicKey
@@ -542,7 +542,7 @@ async function main() {
     }
   }
 
-  // Optional: create issuer PDA for the current wallet
+  // create issuer PDA for the current wallet
   if (process.argv.includes("--add-issuer")) {
     if (!configPubkey) {
       throw new Error("No config pubkey. Run with --init first to create Config.");
@@ -590,7 +590,7 @@ async function main() {
     return;
   }
 
-  // Try typed fetch only if IDL declares the account layout
+  // typed vs raw Config fetch
   const hasConfig = keptNames.includes("Config");
 
   if (configPubkey) {
@@ -621,7 +621,7 @@ async function main() {
     console.log("No config pubkey available. Run with --init first.");
   }
 
-  // Example: issuer PDA often includes the config key; adjust if your program differs
+  // example: derive issuer PDA for current wallet
   if (configPubkey) {
     const [issuerPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("issuer"), configPubkey.toBuffer(), provider.wallet.publicKey.toBuffer()],

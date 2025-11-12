@@ -17,16 +17,16 @@
 ### Quick Reference Commands
 
 ```bash
-# Issue LUMI (whole tokens)
+# issue whole LUMI tokens
 RECIPIENT=GtJg94gHJ2azqjCTPqQZuHbG3kBSA3JZ33xSmKa3V7Fj
 npx ts-node scripts/lumi.ts --issue $RECIPIENT 5
 
-# Decimal amounts
+# decimal amounts
 npx ts-node scripts/lumi.ts --issue $RECIPIENT 1.25 --cid "note"
 
-# Raw base units (u64)
+# raw base units (u64)
 npx ts-node scripts/lumi.ts --issue $RECIPIENT 5000000 --base-units
 
-# Check balance
+# check balance
 spl-token balance $LUMI_MINT --owner $RECIPIENT
 ```
