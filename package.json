@@ -6,8 +6,8 @@
     "lumi:add-issuer": "make add-issuer",
     "lumi:issue": "make issue",
     "lumi:balance": "make balance",
-	"lumi:create-ata": "make create-ata",
-	"lumi:transfer": "make transfer"
+    "lumi:create-ata": "make create-ata",
+    "lumi:transfer": "make transfer"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
@@ -15,6 +15,9 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
+    "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@metaplex-foundation/umi": "^1.4.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.4.1",
     "@solana/web3.js": "^1.98.4"
   }
 }

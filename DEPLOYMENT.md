@@ -5,7 +5,7 @@
 - **Program ID (devnet):** `DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM`
 - **IDL account (on-chain):** `2gobHj4ScHziyKbgWAoidGua8pGPe3P5orrpC28WTpPg`
 - **Config account:** `711TpNNmDj1QuBocMnQvJRjJ2sM8yn4BQ9gkwFj1YtwZ`
-- **Mint (SPL-Token, 6 dec):** `5aswXuCmk7j5XeUoyV5Rzum18MTUdvY9Pi4LEK1Bz3mL`
+- **Mint (SPL-Token, 6 dec):** `55xfrNK2pKkEkJRn2qCUz65dRnmGQb4n6u4ozSJV5E82`
 - **Mint authority PDA:** `GZc4AZQ9GzuCiaYqEWrjyqqCPMuDc9s4BKDLYGH1p58R` *(bump 253)*
 - **Issuer PDA (for wallet):** `Br2LcsCtskmPRdn3noszenYe3wM2gAJhHSTh94tfC12B`
 - **Token Program in use:** `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA` *(SPL-Token / legacy)*
