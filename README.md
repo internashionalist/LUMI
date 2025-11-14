@@ -76,7 +76,7 @@ Start the local development server:
 npm run dev
 ```
 
-Open the dashboard: 
+Open the dashboard<br>
 	**http://localhost:3000**
 
 ---
