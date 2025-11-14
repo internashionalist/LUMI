@@ -77,7 +77,7 @@ npm run dev
 ```
 
 Open the dashboard: 
-- **http://localhost:3000**
+	**http://localhost:3000**
 
 ---
 
