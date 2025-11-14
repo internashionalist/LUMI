@@ -202,8 +202,8 @@ Public Solana test network with free airdrop SOL.
 
 He is passionate about building polished, practical tools for users and developers.
 
-GitHub:   https://github.com/internashionalist
-LinkedIn: https://linkedin.com/in/nashthames
+GitHub:   https://github.com/internashionalist<br>
+LinkedIn: https://linkedin.com/in/nashthames<br>
 Email:    nash@nashthames.com
 
 ---
