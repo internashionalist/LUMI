@@ -1,17 +1,4 @@
 import type { Idl, AnchorProvider, Program } from "@coral-xyz/anchor";
-/**
- * LUMI client script (TypeScript)
- * - Loads IDL from target/idl/lumi.json (no import assertions needed)
- * - Creates an Anchor provider from ANCHOR_PROVIDER_URL and ANCHOR_WALLET (or sensible defaults)
- * - Instantiates Program and prints PDAs
- * - Attempts a typed fetch of Config if present in IDL; otherwise falls back to raw getAccountInfo
- *
- * Run:
- *   ANCHOR_PROVIDER_URL=https://api.devnet.solana.com \
- *   ANCHOR_WALLET=$HOME/.config/solana/id.json \
- *   npx ts-node scripts/lumi.ts
- */
-
 import anchorCjs from "@coral-xyz/anchor";
 const anchor = anchorCjs as typeof import("@coral-xyz/anchor");
 const { Wallet } = anchorCjs as any;
@@ -25,13 +12,11 @@ import { sha256 } from "@noble/hashes/sha256";
 import fs from "fs";
 import path from "path";
 
-// Default to SPL Token (legacy Tokenkeg). Override via env TOKEN_PROGRAM if needed.
+// SPL token (legacy) by default - can be overridden via TOKEN_PROGRAM env var
 const TOKEN_PROGRAM_TO_USE = new PublicKey(
   process.env.TOKEN_PROGRAM || "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 );
 
-// === Constants you can tweak ===
-// Prefer an environment override so we don't have to recompile when switching mints
 const LUMI_MINT = new PublicKey(
 	process.env.LUMI_MINT || process.env.LUMI_MINT_PUBKEY || "3S8K81Fg4aiifjhGmPhEzm56nA7LeooUUe5SokNoABwz"
 );
@@ -52,10 +37,9 @@ function loadIdl(): Idl {
   return JSON.parse(raw);
 }
 
-// Set to 1000 LUMI (with 6 decimals)
+// 6 decimals - can be changed to mint more per day
 const DAILY_CAP_PER_ISSUER = new BN(1_000_000_000);
 
-// Persist the config account pubkey so we don't recreate it
 const CONFIG_PATH = path.resolve(process.cwd(), "target/config.json");
 
 function saveConfigPubkey(pubkey: PublicKey) {
@@ -77,12 +61,10 @@ function loadConfigPubkey(): PublicKey | null {
   return null;
 }
 
-// === Program ID ===
 export const PROGRAM_ID = new PublicKey(
   "DkVEJV8J2biu2jUBibqUHAzvupfP1XSMMXuARNAe2piM"
 );
 
-// === Provider ===
 function getProvider(): AnchorProvider {
   const url =
     process.env.ANCHOR_PROVIDER_URL ||
@@ -113,13 +95,11 @@ function getProvider(): AnchorProvider {
   });
 }
 
-// === Optional: check if IDL contains a given account ===
 function idlHasAccount(idl: any, name: string): boolean {
   return Array.isArray(idl?.accounts) && idl.accounts.some((a: any) => a?.name === name && a?.type?.kind === "struct");
 }
 
-// Remove IDL accounts that don't have a well-formed struct layout so Anchor's
-// AccountClient doesn't try to compute a size from undefined.
+// removes invalid account layouts from the IDL - make fetch go fast
 function sanitizeIdl(idl: any): { sanitized: any; keptNames: string[] } {
   const clone = JSON.parse(JSON.stringify(idl));
   const rawNames = Array.isArray(idl?.accounts)
@@ -157,13 +137,13 @@ async function main() {
   const idl = loadIdl();
   const { sanitized: sanitizedIdl, keptNames } = sanitizeIdl(idl);
 
-  // Show what instructions exist in the IDL
+  // log to show what instructions are available
   const ixNames: string[] = Array.isArray((idl as any)?.instructions)
     ? (idl as any).instructions.map((i: any) => i?.name).filter(Boolean)
     : [];
   console.log("IDL instructions:", ixNames);
 
-  // Allow `--init` CLI flag or DO_INIT=1 env to attempt a simple config init
+  // for --init flag
   const wantInit = process.argv.includes("--init") || process.env.DO_INIT === "1";
 
   const provider = getProvider();
@@ -177,14 +157,13 @@ async function main() {
     );
   }
 
-  // Anchor Program constructor changed order across versions.
-  // Use a version-agnostic shim: try (idl, programId, provider) first, then fall back to (idl, provider, programId).
   const ProgramCtor: any = (anchor as any).Program;
   let program: Program;
   try {
     program = new ProgramCtor(sanitizedIdl as Idl, PROGRAM_ID, provider);
-    // Sanity check: ensure constructed program has the expected id; if not, try the other order.
-    if (program?.programId?.toBase58?.() !== PROGRAM_ID.toBase58()) {
+
+	// sanity check: ensure programId matches
+	if (program?.programId?.toBase58?.() !== PROGRAM_ID.toBase58()) {
       throw new Error("Program ctor order mismatch; retrying");
     }
   } catch (_e) {
@@ -195,7 +174,7 @@ async function main() {
   console.log("wallet:", provider.wallet.publicKey.toBase58());
   console.log("program:", PROGRAM_ID.toBase58());
 
-  // Load saved config or instruct to run --init
+  // load saved config or instruct to run --init
   let configPubkey = loadConfigPubkey();
   if (configPubkey) {
     console.log("config (saved):", configPubkey.toBase58());
@@ -204,8 +183,8 @@ async function main() {
   }
 
   async function initializeConfig(program: Program, walletPubkey: PublicKey) {
-    // Config is a regular account (not PDA); must be created with a new keypair and signed
-    const configKp = Keypair.generate();
+	// generate new config keypair
+	const configKp = Keypair.generate();
     const cfg = configKp.publicKey;
 
     // mint_authority PDA = ["mint_authority", config.key()]
@@ -214,7 +193,7 @@ async function main() {
       PROGRAM_ID
     );
 
-    // Sanity check: ensure the LUMI_MINT account owner matches the chosen token program
+    // sanity check: ensure LUMI_MINT exists and is owned by the selected TOKEN_PROGRAM
     const connection = (anchor.getProvider() as any).connection;
     const mintInfo = await connection.getAccountInfo(LUMI_MINT);
     if (!mintInfo) {
@@ -231,7 +210,7 @@ async function main() {
     console.log("Creating new Config at:", cfg.toBase58());
     console.log("mint_authority PDA:", mintAuthorityPda.toBase58(), "bump:", mintAuthBump);
 
-    // Try standard Anchor path first (this uses program.coder internally)
+    // tries regular Anchor .rpc() path first
     try {
       const ixBuilder =
         (program.methods as any).initializeConfig ||
@@ -242,18 +221,14 @@ async function main() {
 
       console.log("Using token program:", TOKEN_PROGRAM_TO_USE.toBase58());
       const txSig = await ixBuilder(DAILY_CAP_PER_ISSUER)
-        .accounts({
-          // admin
+	  	  // both cases to make life easier
+          .accounts({
           admin: walletPubkey,
-          // mint authority PDA
           mintAuthority: mintAuthorityPda,
           mint_authority: mintAuthorityPda,
-          // lumi mint
           lumiMint: LUMI_MINT,
           lumi_mint: LUMI_MINT,
-          // config account
           config: cfg,
-          // system + token programs (support both casings)
           systemProgram: anchor.web3.SystemProgram.programId,
           system_program: anchor.web3.SystemProgram.programId,
           tokenProgram: TOKEN_PROGRAM_TO_USE,
@@ -268,9 +243,7 @@ async function main() {
     } catch (e: any) {
       console.warn("Anchor .rpc() path failed, falling back to manual instruction:", e?.message || e);
     }
-
-    // ---- Manual fallback (no reliance on program.coder) ----
-    // Discriminator = sha256("global:initialize_config").slice(0, 8)
+	// manual instruction encoding
     function instructionDiscriminator(name: string): Buffer {
       const seed = `global:${name}`;
       const digest = Buffer.from(sha256(Buffer.from(seed)));
@@ -279,8 +252,7 @@ async function main() {
 
     const disc = instructionDiscriminator("initialize_config");
 
-    // Serialize u64 little-endian for DAILY_CAP_PER_ISSUER
-    // DAILY_CAP_PER_ISSUER is a BN; convert to le u64
+	// helper to encode u64 LE
     function bnToLeU64(x: any): Buffer {
       const b = Buffer.alloc(8);
       const n = BigInt(x.toString());
@@ -290,20 +262,12 @@ async function main() {
 
     const data = Buffer.concat([disc, bnToLeU64(DAILY_CAP_PER_ISSUER)]);
 
-    // Accounts (order matters as per the Rust ctx for initialize_config)
-    // We include both camelCase and snake_case in .accounts earlier; for manual ix we only list each once in the correct order:
     const keys = [
-      // admin (signer, writable = true as payer)
       { pubkey: walletPubkey, isSigner: true, isWritable: true },
-      // mint_authority PDA (not signer, writable if your program mutates it; safe to set false here)
       { pubkey: mintAuthorityPda, isSigner: false, isWritable: false },
-      // lumi_mint (must be writable: #[account(mut)] in InitializeConfig)
       { pubkey: LUMI_MINT, isSigner: false, isWritable: true },
-      // config (will be created via Anchor's init when using CPI create_account; must be signer and writable)
       { pubkey: cfg, isSigner: true, isWritable: true },
-      // system_program
       { pubkey: anchor.web3.SystemProgram.programId, isSigner: false, isWritable: false },
-      // token_program (legacy by default)
       { pubkey: TOKEN_PROGRAM_TO_USE, isSigner: false, isWritable: false },
     ];
 
@@ -317,9 +281,7 @@ async function main() {
     tx.feePayer = walletPubkey;
     const { blockhash } = await (anchor.getProvider() as any).connection.getLatestBlockhash("finalized");
     tx.recentBlockhash = blockhash;
-    // both admin (provider wallet) and config must sign
     tx.partialSign(configKp);
-    // finalize and send with provider (which will sign as wallet/feePayer)
     const sig = await (anchor.getProvider() as any).sendAndConfirm(tx, [configKp]);
     console.log("initialize_config (manual) tx:", sig);
 
@@ -328,13 +290,11 @@ async function main() {
   }
 
   async function addIssuer(program: Program, walletPubkey: PublicKey, configPubkey: PublicKey) {
-    // issuer PDA = ["issuer", config, wallet]
     const [issuerPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("issuer"), configPubkey.toBuffer(), walletPubkey.toBuffer()],
       PROGRAM_ID
     );
   
-    // manual discriminator helper
     function instructionDiscriminator(name: string): Buffer {
       const seed = `global:${name}`;
       const digest = Buffer.from(sha256(Buffer.from(seed)));
@@ -342,11 +302,8 @@ async function main() {
     }
     const disc = instructionDiscriminator("add_issuer");
   
-    // No args for add_issuer
     const data = Buffer.from(disc);
   
-    // Accounts order must match Rust `Context<AddIssuer>`
-    // admin (signer), config (mut), issuer (PDA, init, mut), issuer_wallet (unchecked), system_program
     const keys = [
       { pubkey: walletPubkey, isSigner: true, isWritable: true },          // admin
       { pubkey: configPubkey, isSigner: false, isWritable: true },         // config (mut)
@@ -372,7 +329,7 @@ async function main() {
     return issuerPda;
   }
 
-  // ---- Helpers for manual instruction encoding (issue_lumi) ----
+  // helpers for issueLumi
   function ixDisc(name: string): Buffer {
     const seed = `global:${name}`;
     return Buffer.from(sha256(Buffer.from(seed))).subarray(0, 8);
@@ -390,8 +347,6 @@ async function main() {
     return Buffer.concat([len, bytes]);
   }
   function parseAmountToU64(amountInput: string, decimals: number, baseUnits: boolean): bigint {
-    // When baseUnits=true: interpret integers as raw u64 base-units (no decimals allowed).
-    // When baseUnits=false (default): interpret integers as WHOLE tokens; decimals like "1.5" supported.
     const POW10 = (d: number) => (10n ** BigInt(d));
 
     if (baseUnits) {
@@ -402,11 +357,11 @@ async function main() {
     }
 
     if (/^\d+$/.test(amountInput)) {
-      // Treat plain integers as whole-token amounts
+      // plain integers are whole units
       return BigInt(amountInput) * POW10(decimals);
     }
 
-    // Decimal string like "1.5"
+	// decimal number
     const [whole, fracRaw = ""] = amountInput.split(".");
     if (!/^\d+$/.test(whole || "0") || !/^\d*$/.test(fracRaw)) {
       throw new Error("Amount must be an integer or decimal number, e.g. 5 or 1.25");
@@ -425,7 +380,7 @@ async function main() {
     cid?: string,
     baseUnits: boolean = false
   ) {
-    // derive PDAs
+
     const [issuerPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("issuer"), configPubkey.toBuffer(), (anchor.getProvider() as any).wallet.publicKey.toBuffer()],
       PROGRAM_ID
@@ -435,7 +390,6 @@ async function main() {
       PROGRAM_ID
     );
 
-    // ensure recipient ATA exists (under selected TOKEN_PROGRAM)
     const tokenAccts = await connection.getTokenAccountsByOwner(toPubkey, {
       mint: LUMI_MINT,
       programId: TOKEN_PROGRAM_TO_USE
@@ -448,7 +402,6 @@ async function main() {
     }
     const toAta = tokenAccts.value[0].pubkey;
 
-    // read mint decimals (parsed)
     const parsedMint = await connection.getParsedAccountInfo(LUMI_MINT);
     const decimals = (parsedMint.value as any)?.data?.parsed?.info?.decimals;
     if (typeof decimals !== "number") {
@@ -456,7 +409,6 @@ async function main() {
     }
     const amountU64 = parseAmountToU64(amountInput, decimals, baseUnits);
 
-    // args: amount(u64 LE), reason([u8;8]), ipfs_cid(string)
     const disc = ixDisc("issue_lumi");
     const amountBuf = u64Le(amountU64);
     const reason = (reasonHex ?? "0000000000000000").toLowerCase().replace(/^0x/, "");
@@ -467,7 +419,6 @@ async function main() {
     const cidBuf = borshString(cid ?? "");
     const data = Buffer.concat([disc, amountBuf, reasonBuf, cidBuf]);
 
-    // accounts must match Rust Context<IssueLumi>
     const keys = [
       { pubkey: (anchor.getProvider() as any).wallet.publicKey, isSigner: true,  isWritable: true  }, // wallet
       { pubkey: configPubkey,               isSigner: false, isWritable: true  }, // config
@@ -596,7 +547,7 @@ async function main() {
   if (configPubkey) {
     if (hasConfig) {
       try {
-        // @ts-ignore - Anchor creates dynamic helpers based on IDL
+        // @ts-ignore - typed fetch
         const cfg = await program.account.config.fetch(configPubkey);
         console.log("Typed Config:", cfg);
       } catch (e: any) {
@@ -621,7 +572,6 @@ async function main() {
     console.log("No config pubkey available. Run with --init first.");
   }
 
-  // example: derive issuer PDA for current wallet
   if (configPubkey) {
     const [issuerPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("issuer"), configPubkey.toBuffer(), provider.wallet.publicKey.toBuffer()],
