@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as anchor from "@coral-xyz/anchor";
-import idl from "../../target/idl/lumi.json";
+import idl from "../idl/lumi.json";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   getAssociatedTokenAddressSync,

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useConnection, useWallet, useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import idl from '../../target/idl/lumi.json';
+import idl from '../idl/lumi.json';
 import { PROGRAM_ID, LUMI_MINT } from '../lib/solana';
 import * as anchor from '@coral-xyz/anchor';
 import { getAssociatedTokenAddressSync, createAssociatedTokenAccountInstruction, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
