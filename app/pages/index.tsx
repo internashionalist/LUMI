@@ -33,7 +33,6 @@ const ATLAS = {
 	teal: "#1fae8cff",
 	tealSoft: "rgba(34,197,94,0.14)",
 	tealDark: "rgba(10, 126, 85, 0.9)",
-	blue: "rgba(10, 85, 135, 1)",
 	cyan: "#22d3ee",
 	gold: "#facc15",
 	beige: "#f4dec3",
@@ -316,15 +315,15 @@ export default function Home() {
 										gap: "0.4rem",
 									}}
 								>
-									<dt style={{ color: ATLAS.blue }}>LUMI Dashboard</dt>
+									<span style={{ color: "rgba(10, 85, 135, 1)" }}>LUMI Dashboard</span>
 									<span
 										style={{
 											fontSize: "0.7rem",
 											fontWeight: 600,
 											padding: "0.18rem 0.55rem",
 											borderRadius: "999px",
-											background: "ATLAS.tealSoft",
-											color: ATLAS.cyan,
+											background: "linear-gradient(135deg, #22c55e, #22d3ee, #0ea5e9)",
+											color: ATLAS.gold,
 											textTransform: "uppercase",
 											letterSpacing: "0.12em",
 										}}
@@ -418,7 +417,7 @@ export default function Home() {
 							>
 								◎
 							</span>
-							<dt style={{ color: ATLAS.gold }}>Token &amp; Network</dt>
+							<span style={{ color: ATLAS.gold }}>Token &amp; Network</span>
 						</h2>
 						<dl style={{ margin: 0 }}>
 							<div
@@ -435,9 +434,10 @@ export default function Home() {
 										margin: 0,
 										fontFamily:
 											'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+										color: ATLAS.beigeDark,
 									}}
 								>
-									<dt style={{ color: ATLAS.beigeDark }}>Solana Devnet</dt>
+									Solana Devnet
 								</dd>
 							</div>
 							<div
