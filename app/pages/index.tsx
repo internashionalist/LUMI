@@ -334,7 +334,7 @@ export default function Home() {
 								</h1>
 								<p
 									style={{
-										fontSize: "0.88rem",
+										fontSize: "0.95rem",
 										color: ATLAS.teal,
 										marginTop: "0.2rem",
 										maxWidth: "36rem",
