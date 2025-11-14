@@ -35,6 +35,7 @@ const ATLAS = {
 	tealDark: "rgba(10, 126, 85, 0.9)",
 	cyan: "#22d3ee",
 	gold: "#facc15",
+	blue: "rgba(0, 183, 255, 0.96)",
 	beige: "#f4dec3",
 	beigeDark: "#e8c9a4",
 	textPrimary: "#e5e7eb",
@@ -323,7 +324,7 @@ export default function Home() {
 											padding: "0.18rem 0.55rem",
 											borderRadius: "999px",
 											background: "linear-gradient(135deg, #22c55e, #22d3ee, #0ea5e9)",
-											color: ATLAS.gold,
+											color: ATLAS.navySoft,
 											textTransform: "uppercase",
 											letterSpacing: "0.12em",
 										}}
@@ -340,7 +341,7 @@ export default function Home() {
 									}}
 								>
 									Devnet-only Solana SPL token for{" "}
-									<span style={{ color: ATLAS.navy }}>Atlas School</span> rewards
+									<span style={{ color: ATLAS.tealDark }}>Atlas School</span> rewards
 									and achievements.
 								</p>
 							</div>
@@ -387,9 +388,10 @@ export default function Home() {
 							borderRadius: "20px",
 							border: `1px solid ${ATLAS.border}`,
 							background:
-								"radial-gradient(circle at 0% 0%, rgba(70, 71, 131, 0.80), rgba(19, 181, 124, 0.98)",
+								"radial-gradient(circle at 0% 0%, rgba(70, 71, 131, 0.80), rgba(19, 181, 124, 0.98))",
 							padding: "1.05rem 1.25rem",
 							fontSize: "0.8rem",
+							color: ATLAS.textPrimary,
 						}}
 					>
 						<h2
@@ -411,7 +413,7 @@ export default function Home() {
 									display: "flex",
 									alignItems: "center",
 									justifyContent: "center",
-									fontSize: "0.8rem",
+									fontSize: "0.86rem",
 									color: ATLAS.gold,
 								}}
 							>
@@ -428,16 +430,16 @@ export default function Home() {
 									marginBottom: "0.25rem",
 								}}
 							>
-								<dt style={{ color: ATLAS.beigeDark }}>Network</dt>
+								<span style={{ color: ATLAS.beige }}>Network</span>
 								<dd
 									style={{
 										margin: 0,
-										fontFamily:
-											'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
-										color: ATLAS.beigeDark,
+										maxWidth: "60%",
+										textAlign: "right",
+										color: ATLAS.cyan,
 									}}
 								>
-									Solana Devnet
+									<span style={{ color: ATLAS.cyan }}>Solana Devnet</span>
 								</dd>
 							</div>
 							<div
@@ -448,18 +450,16 @@ export default function Home() {
 									marginBottom: "0.25rem",
 								}}
 							>
-								<dt style={{ color: ATLAS.beigeDark }}>RPC</dt>
+								<dt style={{ color: ATLAS.beige }}>RPC</dt>
 								<dd
 									style={{
 										margin: 0,
 										maxWidth: "60%",
 										textAlign: "right",
-										fontFamily:
-											'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
 										overflow: "hidden",
 										textOverflow: "ellipsis",
 										whiteSpace: "nowrap",
-										color: ATLAS.beigeDark,
+										color: ATLAS.cyan,
 									}}
 								>
 									{RPC_ENDPOINT}
@@ -473,21 +473,19 @@ export default function Home() {
 									marginBottom: "0.25rem",
 								}}
 							>
-								<dt style={{ color: ATLAS.beigeDark }}>LUMI Mint</dt>
+								<span style={{ color: ATLAS.beige }}>LUMI Mint</span>
 								<dd
 									style={{
 										margin: 0,
 										maxWidth: "60%",
 										textAlign: "right",
-										fontFamily:
-											'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
 										overflow: "hidden",
 										textOverflow: "ellipsis",
 										whiteSpace: "nowrap",
-										color: ATLAS.beigeDark,
+										color: ATLAS.beige,
 									}}
 								>
-									{LUMI_MINT.toBase58()}
+									<span style={{ color: ATLAS.cyan }}>{LUMI_MINT.toBase58()}</span>
 								</dd>
 							</div>
 						</dl>
@@ -504,8 +502,8 @@ export default function Home() {
 								target="_blank"
 								rel="noreferrer"
 								style={{
-									fontSize: "0.72rem",
-									color: ATLAS.cyan,
+									fontSize: "0.86rem",
+									color: ATLAS.blue,
 									textDecoration: "none",
 								}}
 							>
@@ -516,8 +514,8 @@ export default function Home() {
 								target="_blank"
 								rel="noreferrer"
 								style={{
-									fontSize: "0.72rem",
-									color: ATLAS.cyan,
+									fontSize: "0.86rem",
+									color: ATLAS.blue,
 									textDecoration: "none",
 								}}
 							>
@@ -568,7 +566,7 @@ export default function Home() {
 							{connected && publicKey ? (
 								<>
 									<p style={{ color: ATLAS.beige, marginBottom: "0.25rem" }}>
-										Connected wallet:{" "}
+										Connected Wallet:{" "}
 										<span
 											style={{
 												fontFamily:
@@ -580,7 +578,7 @@ export default function Home() {
 										</span>
 									</p>
 									<p style={{ color: ATLAS.beige, marginBottom: "0.25rem" }}>
-										LUMI balance:{" "}
+										LUMI Balance:{" "}
 										<span
 											style={{
 												fontFamily:
@@ -594,11 +592,11 @@ export default function Home() {
 									<p
 										style={{
 											color: ATLAS.textMuted,
-											fontSize: "0.76rem",
+											fontSize: "0.86rem",
 											marginBottom: "0.2rem",
 										}}
 									>
-										<dt style={{ color: ATLAS.beige }}>Associated token account:</dt>
+										<dt style={{ color: ATLAS.beige }}>Associated Token Account:</dt>
 									</p>
 									<p
 										style={{
