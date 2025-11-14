@@ -39,13 +39,13 @@ pub mod lumi {
         require!(issuer.issued_today.saturating_add(amount) <= config.daily_cap_per_issuer, LumiError::DailyCapExceeded);
 
         // mint LUMI using PDA as mint authority
-		let cfg_key = config.key();
+        let cfg_key = config.key();
         let seeds: &[&[u8]] = &[
             b"mint_authority",
             cfg_key.as_ref(),
             &[config.mint_authority_bump],
         ];
-         let signer: &[&[&[u8]]] = &[seeds];
+        let signer: &[&[&[u8]]] = &[seeds];
 
         let cpi_accounts = ti::MintTo {
             mint: ctx.accounts.lumi_mint.to_account_info(),
@@ -85,13 +85,13 @@ pub mod lumi {
         require!(issuer.issued_today.saturating_add(amount) <= config.daily_cap_per_issuer, LumiError::DailyCapExceeded);
 
         // PDA signer seeds
-		let cfg_key = config.key();
+        let cfg_key = config.key();
         let seeds: &[&[u8]] = &[
             b"mint_authority",
             cfg_key.as_ref(),
             &[config.mint_authority_bump],
         ];
-         let signer: &[&[&[u8]]] = &[seeds];
+        let signer: &[&[&[u8]]] = &[seeds];
 
         // CPI via token-interface (works for SPL and Token-2022)
         let cpi_accounts = ti::MintTo {
@@ -124,7 +124,7 @@ pub struct InitializeConfig<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
 
-    // CHECK: PDA that signs mint_to
+    /// CHECK: PDA that signs mint_to
     #[account(
         seeds = [b"mint_authority", config.key().as_ref()],
         bump,
@@ -163,7 +163,7 @@ pub struct AddIssuer<'info> {
     )]
     pub issuer: Account<'info, Issuer>,
 
-    // CHECK: wallet of the issuer being added
+    /// CHECK: wallet of the issuer being added
     pub issuer_wallet: UncheckedAccount<'info>,
 
     pub system_program: Program<'info, System>,
@@ -178,7 +178,7 @@ pub struct IssueLumi<'info> {
     #[account(mut)]
     pub config: Account<'info, Config>,
 
-    // CHECK: PDA that signs mint_to
+    /// CHECK: PDA that signs mint_to
     #[account(
         seeds = [b"mint_authority", config.key().as_ref()],
         bump = config.mint_authority_bump,
@@ -194,7 +194,7 @@ pub struct IssueLumi<'info> {
     pub issuer: Account<'info, Issuer>,
 
     // Recipient
-    // CHECK: just a pubkey receiver; ATA must exist or be created client-side
+    /// CHECK: just a pubkey receiver; ATA must exist or be created client-side
     pub to: UncheckedAccount<'info>,
 
     #[account(mut)]
@@ -215,7 +215,7 @@ pub struct IssueLumiLegacy<'info> {
     #[account(mut)]
     pub config: Account<'info, Config>,
 
-    // CHECK: PDA that signs mint_to
+    /// CHECK: PDA that signs mint_to
     #[account(
         seeds = [b"mint_authority", config.key().as_ref()],
         bump = config.mint_authority_bump,
@@ -231,7 +231,7 @@ pub struct IssueLumiLegacy<'info> {
     pub issuer: Account<'info, Issuer>,
 
     // Recipient
-    // CHECK: just a pubkey receiver; ATA must exist or be created client-side
+    /// CHECK: just a pubkey receiver; ATA must exist or be created client-side
     pub to: UncheckedAccount<'info>,
 
     #[account(mut)]

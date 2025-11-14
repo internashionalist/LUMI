@@ -29,7 +29,7 @@ const LUMI_MINT = publicKey(
 const METADATA_URI =
 	"https://harlequin-legislative-sparrow-672.mypinata.cloud/ipfs/bafybeigs6yytpfslgtng7trr2az4nreszkksezbwip22ftmkhe7c7q2f2a";
 
-// Path to your Solana CLI keypair (same one Anchor uses)
+// Path to Solana CLI keypair (same one Anchor uses)
 const WALLET_PATH =
 	process.env.ANCHOR_WALLET ||
 	path.join(os.homedir(), ".config", "solana", "id.json");
@@ -59,7 +59,7 @@ async function main() {
 
 	// Sample metadata for our token
 	const tokenMetadata = {
-		name: "LUMI Token",
+		name: "LUMI",
 		symbol: "LUMI",
 		uri: METADATA_URI,
 	};
