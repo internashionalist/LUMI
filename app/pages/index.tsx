@@ -240,7 +240,7 @@ export default function Home() {
 				justifyContent: "center",
 				alignItems: "center",
 				padding: "2.5rem 1.5rem",
-				background: `radial-gradient(circle at 0% 0%, ${ATLAS.beige}, transparent 52%), linear-gradient(145deg, ${ATLAS.beige}, ${ATLAS.teal})`,
+				background: `radial-gradient(circle at 0% 0%, ${ATLAS.tealDark}, transparent 52%), linear-gradient(145deg, ${ATLAS.blue}, ${ATLAS.navy})`,
 				fontFamily:
 					'system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
 			}}
@@ -430,11 +430,16 @@ export default function Home() {
 									marginBottom: "0.25rem",
 								}}
 							>
-								<span style={{ color: ATLAS.beige }}>Network</span>
+								<span
+									style={{
+										color: ATLAS.beige,
+										fontSize: "0.86rem",
+									}}>Network</span>
 								<dd
 									style={{
 										margin: 0,
 										maxWidth: "60%",
+										fontSize: "0.86rem",
 										textAlign: "right",
 										color: ATLAS.cyan,
 									}}
@@ -455,6 +460,7 @@ export default function Home() {
 									style={{
 										margin: 0,
 										maxWidth: "60%",
+										fontSize: "0.86rem",
 										textAlign: "right",
 										overflow: "hidden",
 										textOverflow: "ellipsis",
@@ -473,11 +479,19 @@ export default function Home() {
 									marginBottom: "0.25rem",
 								}}
 							>
-								<span style={{ color: ATLAS.beige }}>LUMI Mint</span>
+								<dt
+									style={{
+										color: ATLAS.beige,
+										fontSize: "0.86rem"
+									}}
+								>
+									LUMI Mint
+								</dt>
 								<dd
 									style={{
 										margin: 0,
 										maxWidth: "60%",
+										fontSize: "0.86rem",
 										textAlign: "right",
 										overflow: "hidden",
 										textOverflow: "ellipsis",
@@ -579,6 +593,7 @@ export default function Home() {
 									</p>
 									<p style={{ color: ATLAS.beige, marginBottom: "0.25rem" }}>
 										LUMI Balance:{" "}
+										<br />
 										<span
 											style={{
 												fontFamily:
@@ -593,21 +608,21 @@ export default function Home() {
 										style={{
 											color: ATLAS.textMuted,
 											fontSize: "0.86rem",
-											marginBottom: "0.2rem",
+											marginBottom: "0.25rem",
 										}}
 									>
-										<dt style={{ color: ATLAS.beige }}>Associated Token Account:</dt>
 									</p>
-									<p
-										style={{
-											fontSize: "0.76rem",
-											fontFamily:
-												'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
-											color: ATLAS.cyan,
-											wordBreak: "break-all",
-										}}
-									>
-										{ataStr || "(no ATA yet)"}
+									<p style={{ color: ATLAS.beige }}>
+										Associated Token Account:{" "}
+										<span
+											style={{
+												fontFamily:
+													'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+												color: ATLAS.cyan,
+											}}
+										>
+											{ataStr || "(no ATA yet)"}
+										</span>
 									</p>
 								</>
 							) : (
@@ -754,7 +769,7 @@ export default function Home() {
 						>
 							★
 						</span>
-						Recent awards
+						Recent Awards
 					</h2>
 					<p style={{ fontSize: "0.78rem", color: ATLAS.beigeDark }}>
 						Until I wire in awards, use{" "}
