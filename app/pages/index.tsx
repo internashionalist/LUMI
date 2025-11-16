@@ -29,13 +29,13 @@ const ATLAS = {
 	navy: "#020617",
 	navySoft: "#02091b",
 	panel: "#020617",
-	border: "rgba(148,163,184,0.55)",
 	teal: "#1fae8cff",
 	tealSoft: "rgba(34,197,94,0.14)",
 	tealDark: "rgba(10, 126, 85, 0.9)",
 	cyan: "#22d3ee",
 	gold: "#facc15",
 	blue: "rgba(0, 183, 255, 0.96)",
+	blueDark: "rgba(29, 135, 206, 1)",
 	beige: "#f4dec3",
 	beigeDark: "#e8c9a4",
 	textPrimary: "#e5e7eb",
@@ -251,7 +251,7 @@ export default function Home() {
 					maxWidth: "920px",
 					padding: "1.9rem 2.1rem 2.1rem",
 					borderRadius: "28px",
-					border: "1px solid rgba(148,163,184,0.55)",
+					border: `2px solid ${ATLAS.blueDark}`,
 					background: ATLAS.beige,
 					boxShadow:
 						"0 26px 70px rgba(0,0,0,0.85), 0 0 0 1px rgba(15,23,42,0.9)",
@@ -316,13 +316,14 @@ export default function Home() {
 										gap: "0.4rem",
 									}}
 								>
-									<span style={{ color: "rgba(10, 85, 135, 1)" }}>LUMI Dashboard</span>
+									<span style={{ color: ATLAS.blue }}>LUMI Dashboard</span>
 									<span
 										style={{
 											fontSize: "0.7rem",
 											fontWeight: 600,
 											padding: "0.18rem 0.55rem",
 											borderRadius: "999px",
+											border: `1px solid ${ATLAS.blueDark}`,
 											background: "linear-gradient(135deg, #22c55e, #22d3ee, #0ea5e9)",
 											color: ATLAS.navySoft,
 											textTransform: "uppercase",
@@ -335,14 +336,15 @@ export default function Home() {
 								<p
 									style={{
 										fontSize: "0.95rem",
-										color: ATLAS.teal,
+										fontWeight: 700,
+										color: ATLAS.blueDark,
 										marginTop: "0.2rem",
 										maxWidth: "36rem",
 									}}
 								>
 									Devnet-only Solana SPL token for{" "}
-									<span style={{ color: ATLAS.tealDark }}>Atlas School</span> rewards
-									and achievements.
+									<span style={{ color: ATLAS.blueDark }}>Atlas School</span> rewards
+									and achievements
 								</p>
 							</div>
 						</div>
@@ -360,7 +362,7 @@ export default function Home() {
 								color: ATLAS.navy,
 								padding: "0.25rem 0.6rem",
 								borderRadius: "999px",
-								border: "1px solid rgba(148,163,184,0.4)",
+								border: `1px solid ${ATLAS.blueDark}`,
 								background: "linear-gradient(135deg, #22c55e, #22d3ee, #0ea5e9)",
 							}}
 						>
@@ -386,12 +388,11 @@ export default function Home() {
 					<div
 						style={{
 							borderRadius: "20px",
-							border: `1px solid ${ATLAS.border}`,
+							border: `2px solid ${ATLAS.blueDark}`,
 							background:
 								"radial-gradient(circle at 0% 0%, rgba(70, 71, 131, 0.80), rgba(19, 181, 124, 0.98))",
 							padding: "1.05rem 1.25rem",
-							fontSize: "0.8rem",
-							color: ATLAS.textPrimary,
+							fontSize: "0.86rem",
 						}}
 					>
 						<h2
@@ -542,7 +543,7 @@ export default function Home() {
 					<div
 						style={{
 							borderRadius: "20px",
-							border: `1px solid ${ATLAS.border}`,
+							border: `2px solid ${ATLAS.blueDark}`,
 							background:
 								"radial-gradient(circle at 0% 0%, rgba(70, 71, 131, 0.80), rgba(19, 181, 124, 0.98))",
 							padding: "1.05rem 1.25rem",
@@ -657,7 +658,7 @@ export default function Home() {
 									onClick={claim}
 									disabled={!mounted || claiming}
 									style={{
-										border: "none",
+										border: `2px solid ${ATLAS.blueDark}`,
 										cursor:
 											mounted && !claiming ? "pointer" : "not-allowed",
 										opacity: mounted && !claiming ? 1 : 0.65,
@@ -736,7 +737,7 @@ export default function Home() {
 				<section
 					style={{
 						borderRadius: "20px",
-						border: "1px dashed rgba(148,163,184,0.7)",
+						border: "2px solid ATLAS.blueDark",
 						background:
 							"radial-gradient(circle at 0% 0%, rgba(70, 71, 131, 0.80), rgba(19, 181, 124, 0.98))",
 						padding: "1rem 1.2rem",
@@ -771,7 +772,7 @@ export default function Home() {
 						</span>
 						Recent Awards
 					</h2>
-					<p style={{ fontSize: "0.78rem", color: ATLAS.beigeDark }}>
+					<p style={{ fontSize: "0.86rem", color: ATLAS.beigeDark }}>
 						Until I wire in awards, use{" "}
 						<span style={{ color: ATLAS.cyan }}>Solscan</span> or{" "}
 						<span style={{ color: ATLAS.cyan }}>Solana Explorer</span> to view
